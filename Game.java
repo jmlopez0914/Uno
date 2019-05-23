@@ -1,10 +1,11 @@
 import java.util.ArrayList;
 
 public class Game {
-	ArrayList<Card> discardPile;
-	Deck deck;
-	ArrayList<Hand> hands;
-		
+	private ArrayList<Card> discardPile;
+	private Deck deck;
+	private ArrayList<Hand> hands;
+	private UnoGUI gui;
+	
 	int turn;
 	boolean direction = true;	//handles reverse cards
 	String forcedMove = "";		//handles d2, wd4, and s
@@ -21,18 +22,34 @@ public class Game {
 		deck.shuffle();
 		for (int x = 1; x <= 7; x++) {
 			for (int y = 0; y < hands.size(); y++) {
-				Card topCard = deck.draw(1);
+				Card topCard = deck.draw();
 				hands.get(x).add(topCard);
 			}
 		}
+		
 		//turns over the first card to begin
-		discardPile.add(deck.draw(1));
+		discardPile.add(deck.draw());
+		//handles wild d4
+		while (discardPile.get(0) != null && discardPile.get(0).getID() != "D4")
+			deck.add(discardPile.remove(0));
+			discardPile.add(deck.draw());
+		}
 	}
 	
-	public void playCard() {
+	private void playSelection() {
+		move = hands.get(turn)./*whatever*/(topCard());
+		
+	}
+	
+	private void playCard() {
 		Card playedCard = hands.remove(turn).selectedCard();
 		discardPile.add(playedCard);
-		forcedMove = playedCard.nextPlay();	//getIntermediate();
+		gui.placeCard(playedCard);
+		handleCardEffect(playedCard);
+	}
+	
+	private void handleCardEffect(Card playedCard) {
+		forcedMove = playedCard.getID();
 		switch (forcedMove) {
 			case "S":
 				moveToNextPlayer();
@@ -40,24 +57,31 @@ public class Game {
 			case "D2":
 				moveToNextPlayer();
 				//draw two cards
-				hands.get(turn).add(deck.draw(2));
+				for (int x = 0; x < 2; x++) {
+					hands.get(turn).add(deck.draw());
+					handleEmptyDeck();
+				}
 				break;
-			case "D4":
+			case "D4":			
+				topCard().setColor(hands.get(turn).selectColor());
 				moveToNextPlayer();
 				//draw four cards
-				hands.get(turn).add(deck.draw(4));
+				for (int x = 0; x < 4; x++) {
+					hands.get(turn).add(deck.draw());
+					handleEmptyDeck();
+				}
 				break;
 			case "R":
-				reverse();
+				direction = !direction;
 				break;	
 			case "W":
-				//GUI call
+				topCard().setColor(hands.get(turn).selectColor());
 				break;
-		}
+		}	//end switch
 		moveToNextPlayer();
 	}
 	
-	public void moveToNextPlayer() {
+	private void moveToNextPlayer() {
 		if (direction) {
 			turn++;
 			if (turn > hands.size() - 1)
@@ -68,12 +92,36 @@ public class Game {
 				turn = hands.size() - 1;
 		}
 	}
+
 	
-	public void reverse() {
-		direction = !direction;
+	private Card topCard() {
+		return discardPile.get(discardPile.size() - 1);
 	}
 	
-	public int checkForWinner() {
+	private void handleEmptyDeck() {
+		if (deck.size() == 0) {
+			for (int x = 0; x < discardPile.size() - 1; x++) {
+				deck.add(discardPile.remove(0));
+			}
+			deck.shuffle();
+		}
+	}
+	
+	private int checkForUncalledUno() {
+		for (int c = 0; c < hands.size(); c++) {
+			if (hands.get(c).size() == 1 && hands.get(c).getUno() == false) {
+				return c;
+			} else {
+				for (int x = 0; x < 2; x++) {
+					hands.get(turn).add(deck.draw());
+					handleEmptyDeck();
+				}
+			}
+		}
+		return -1;
+	}
+	
+	private int checkForWinner() {
 		for (int c = 0; c < hands.size(); c++) {
 			if (hands.get(c).size() == 0) {
 				return c;
@@ -81,8 +129,7 @@ public class Game {
 		}
 		return -1;
 	}
-	
 	public static void main(String args[]) {
-		//GUI calls
+		
 	}
 }

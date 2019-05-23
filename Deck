@@ -32,11 +32,6 @@ public class Deck {
 		}
 	}
 	
-	public int size()
-	{
-		return cards.size();
-	}
-	
 	public void shuffle()
 	{
 		for (int i = 0; i < cards.size(); i++)
@@ -49,15 +44,13 @@ public class Deck {
 		}
 	}
 	
-	public ArrayList<Card> draw(int numCards)
+	public Card draw()
 	{
-		ArrayList<Card> cardsDrawn = new ArrayList<Card>();
-		
-		for (int i = 0; i < numCards; i++)
-		{
-			cardsDrawn.add(cards.remove(0));
-		}
-		
-		return cardsDrawn;
+		return cards.remove(0);
+	}
+	
+	public int size()
+	{
+		return cards.size();
 	}
 }

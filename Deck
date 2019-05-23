@@ -44,6 +44,12 @@ public class Deck {
 		}
 	}
 	
+	public void add(Card c)
+	{
+		cards.add(c);
+		shuffle();
+	}
+	
 	public Card draw()
 	{
 		return cards.remove(0);
@@ -53,4 +59,5 @@ public class Deck {
 	{
 		return cards.size();
 	}
+	
 }

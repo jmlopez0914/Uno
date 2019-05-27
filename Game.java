@@ -1,20 +1,20 @@
 import java.util.ArrayList;
 
 public class Game {
-	private ArrayList<Card> discardPile;
-	private Deck deck;
-	private ArrayList<Hand> hands;
-	private UnoGUI gui;
+	private ArrayList<Card> discardPile = new ArrayList<Card>();
+	private Deck deck = new Deck();
+	private ArrayList<Hand> hands = new ArrayList<Hand>();
+	private static UnoGUI gui = new UnoGUI();
 	
 	int turn;
 	boolean direction = true;	//handles reverse cards
-	String forcedMove = "";		//handles d2, wd4, and s
+	String forcedMove = "";		//handles special cards
 	
 	public Game(int players) {
 		//creates hands
-		hands.add(new PlayerHand(/**/));
+		hands.add(new PlayerHand());
 		for (int x = 1; x <= players - 1; x++) {
-			hands.add(new ComputerHand(/**/));
+			hands.add(new ComputerHand());
 		}
 		turn = (int) (Math.random() * players);	//determines who goes first
 		
@@ -23,28 +23,35 @@ public class Game {
 		for (int x = 1; x <= 7; x++) {
 			for (int y = 0; y < hands.size(); y++) {
 				Card topCard = deck.draw();
-				hands.get(x).add(topCard);
+				hands.get(y).add(topCard);
 			}
 		}
 		
 		//turns over the first card to begin
 		discardPile.add(deck.draw());
 		//handles wild d4
-		while (discardPile.get(0) != null && discardPile.get(0).getID() != "D4")
+		while (discardPile.get(0) != null && discardPile.get(0).getID() != "D4") {
 			deck.add(discardPile.remove(0));
 			discardPile.add(deck.draw());
 		}
+		//officially, every other card has their effect activated upon starting
+		handleCardEffect(discardPile.get(0));
 	}
 	
 	private void playSelection() {
-		move = hands.get(turn)./*whatever*/(topCard());
-		
+		int move = hands.get(turn).findPlay(topCard());
+		if (move >= 0)	//representing an index of a card in the hand
+			playCard(move);
+		else {	//representing the drawing index
+			hands.get(turn).add(deck.draw());
+			handleEmptyDeck();
+		}
 	}
 	
-	private void playCard() {
-		Card playedCard = hands.remove(turn).selectedCard();
+	private void playCard(int move) {
+		Card playedCard = hands.get(turn).remove(move);
+		gui.placeCard(playedCard, hands.get(turn));
 		discardPile.add(playedCard);
-		gui.placeCard(playedCard);
 		handleCardEffect(playedCard);
 	}
 	
@@ -129,7 +136,13 @@ public class Game {
 		}
 		return -1;
 	}
+	
+	public UnoGUI getGUI() {
+		return gui;
+	}
+	
 	public static void main(String args[]) {
-		
+		Game unoRound = new Game(4);
+		unoRound.getGUI().unoGUI2(/*just tell me the parameters you need to render and I'll give 'em*/);
 	}
 }

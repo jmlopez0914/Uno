@@ -14,6 +14,9 @@ public class Game {
 	static String forcedMove = "";		//handles special cards
 	private static unoGUI UG;
 	private static boolean begunPlay = false;
+	private static boolean startedTimer = false;
+	private static double unoTimer = 0;
+	private static long lastTime = 0;
 	
 	public static void main(String[] args) throws IOException, InterruptedException {		
 		int players = 4;
@@ -59,16 +62,18 @@ public class Game {
 		begunPlay = true;
 		
 		while(checkForWinner() == -1)
-		{
+		{	
 			UG.draw(turn);
-			Thread.sleep(0);
+			Thread.sleep(1000);
 			playSelection();
+			
 		}
 		
 		UG.draw(-1);
 		UG.setTopOfDiscard(topCard());
 		
 		System.out.println("Winner = " + checkForWinner());
+		UG.displayGameOver(checkForWinner());
 	}
 	
 	private static void playSelection() throws IOException {
@@ -78,14 +83,7 @@ public class Game {
 		else
 			nextPlayer = (turn - 1 + 4) % 4;
 		
-		/*if hand.getID() == 0, then the hand is a playerHand 
-		  else then the hand is a computerHand
-		  
-		  either put findPlay() in computerHand and only call if hand.getID() > 0
-		  		or make separate findPlay() in playerHand that waits for player input, and is only called if hand.getID() == 0 */
-
-		
-		int move = hands.get(turn).findPlay(topCard(), hands.get(nextPlayer).getHand().size());
+		int move = hands.get(turn).findPlay(topCard(), hands.get(nextPlayer).getHand().size(), UG);		
 		
 		if (move >= 0)	//representing an index of a card in the hand
 		{
@@ -113,6 +111,8 @@ public class Game {
 		discardPile.add(playedCard);
 		UG.setTopOfDiscard(topCard());
 		System.out.println("\t\ttopDiscardCard" + discardPile.get(discardPile.size() - 1) + "DP: " + discardPile.size());
+		
+		
 		handleCardEffect(playedCard);
 	}
 	
@@ -139,7 +139,7 @@ public class Game {
 				break;
 			case "D4":		
 				System.out.println("handleD4");
-				topCard().setColor(hands.get(turn).selectColor());
+				topCard().setColor(hands.get(turn).selectColor(UG));
 				moveToNextPlayer();
 				//draw four cards
 				for (int x = 0; x < 4; x++) {
@@ -158,7 +158,7 @@ public class Game {
 				break;	
 			case "W":
 				System.out.println("handleWild");
-				topCard().setColor(hands.get(turn).selectColor());
+				topCard().setColor(hands.get(turn).selectColor(UG));
 				break;
 		}	//end switch
 		moveToNextPlayer();
@@ -187,19 +187,22 @@ public class Game {
 		if (deck.size() <= 0 && discardPile.size() > 1) {
 			System.out.println("\t\t\t\thandleEmptyDeck (DP: " + discardPile.size() + ", Deck: " + deck.size());
 			while (0 < discardPile.size() - 1) {
+				if (discardPile.get(0).getID().equals("W") || discardPile.get(0).getID().equals("D4"))
+				{
+					discardPile.get(0).setColor(Color.BLACK);
+				}
 				deck.add(discardPile.remove(0));
 				UG.setTopOfDiscard(topCard());
 				System.out.println(discardPile.get(0));
 			}
-			//deck.shuffle();
+			deck.shuffle();
 		}
 	}
 	
-	private static int checkForUncalledUno() throws IOException {
-		for (int c = 0; c < hands.size(); c++) {
-			if (hands.get(c).getHand().size() == 1 && hands.get(c).getUno() == false) {
-				return c;
-			} else {
+	private static void checkForUncalledUno() throws IOException {
+			if (hands.get(turn).getHand().size() == 1 && hands.get(turn).getUno()) {
+				return;
+			} else if (hands.get(turn).getHand().size() == 1 ){
 				for (int x = 0; x < 2; x++) {
 					if(deck.size() > 0)
 					{
@@ -208,9 +211,16 @@ public class Game {
 						handleEmptyDeck();
 					}
 				}
-			}
 		}
-		return -1;
+	}
+
+	private static void playerCallUno()
+	{
+		if(!startedTimer)
+		{
+			unoTimer = 2000;
+			startedTimer = true;
+		}
 	}
 	
 	private static int checkForWinner() {
@@ -221,9 +231,4 @@ public class Game {
 		}
 		return -1;
 	}
-	
-	/*public static void main(String args[]) {
-		Game unoRound = new Game(4);
-		unoRound.getGUI().unoGUI2(/*just tell me the parameters you need to render and I'll give 'em);
-	}*/
 }

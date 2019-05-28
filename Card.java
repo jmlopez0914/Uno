@@ -24,7 +24,7 @@ public class Card
 	
 	public boolean isUseful(Card topCard)
 	{	
-		return color == topCard.getColor() || ID == topCard.getID() || ID == "W" || ID == "D4";
+		return color == topCard.getColor() || ID.equals(topCard.getID()) || ID.equals("W") || ID.equals("D4");
 	}
 	
 	public Color selectColor(Color input)

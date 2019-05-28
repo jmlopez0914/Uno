@@ -8,19 +8,14 @@ public class computerHand extends Hand{
 		super(id, hand);
 	}
 	
-public int findPlay(Card topCard, int nextHandSize) {
+public int findPlay(Card topCard, int nextHandSize, unoGUI gui) {
+
+
+
+
+
 		
-		/*for(int i = 0; i < cards.size(); i++)
-		{
-			if(cards.get(i).isUseful(topCard))
-			{
-				return i;
-			}
-		}
-		
-		return -1;*/
-		
-		Color bestColor = selectColor();
+		Color bestColor = selectColor(gui);
 		int latestIndex = -1;
 		int D4Index = -1;
 		
@@ -70,5 +65,48 @@ public int findPlay(Card topCard, int nextHandSize) {
 		}
 		
 		return latestIndex;
+	}
+
+	public Color selectColor(unoGUI gui)
+	{
+		int highestColorNum = 0;
+		int colorType = 7;   //this number doesn't matter (Patrick's orders for 7)
+		
+		for(int c = 0; c < 4; c++)
+		{
+			int colorCounter = 0;
+			
+			for(int v = 0; v < getHand().size(); v++)
+			{
+				if(c == 0 && getHand().get(v).getColor() == Color.RED)
+					colorCounter++;	
+				else if(c == 1 && getHand().get(v).getColor() == Color.BLUE)
+					colorCounter++;	
+				else if(c == 2 && getHand().get(v).getColor() == Color.GREEN)
+					colorCounter++;	
+				else if(c == 3 && getHand().get(v).getColor() == Color.YELLOW)
+					colorCounter++;	
+			}
+			
+			if(colorCounter > highestColorNum)
+			{
+				highestColorNum = colorCounter;
+				colorType = c;
+			}
+		}
+		
+		if(colorType == 0)
+			return Color.RED;	
+		else if(colorType == 1)
+			return Color.BLUE;	
+		else if(colorType == 2)
+			return Color.GREEN;	
+		else
+			return Color.YELLOW;	
+	}
+	
+	public boolean getUno()
+	{
+		return (Math.random() * 5) <= 4;
 	}
 }

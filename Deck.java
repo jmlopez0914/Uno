@@ -1,4 +1,4 @@
-import java.awt.Color;
+ import java.awt.Color;
 import java.util.ArrayList;
 
 public class Deck {
@@ -15,7 +15,7 @@ public class Deck {
 			
 			for(int i = 0; i < 2; i++)
 			{
-				for (int n = 0; n <= 9; n++)
+				for (int n = 1; n <= 9; n++)
 					cards.add(new Card(n + "", c));
 				
 				cards.add(new Card("S", c));

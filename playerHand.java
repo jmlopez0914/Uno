@@ -8,4 +8,7 @@ public class playerHand extends Hand
 		super(i, hand);		
 	}
 
+	public int findPlay(Card topCard, int nextHandSize) {
+		
+	}
 }

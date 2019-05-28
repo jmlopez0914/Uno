@@ -47,17 +47,18 @@ public class Deck {
 	public void add(Card c)
 	{
 		cards.add(c);
-		shuffle();
 	}
 	
 	public Card draw()
 	{
-		return cards.remove(0);
+		if(cards.size() > 0)
+			return cards.remove(0);
+		else
+			return null;
 	}
 	
 	public int size()
 	{
 		return cards.size();
 	}
-	
 }

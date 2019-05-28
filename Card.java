@@ -10,7 +10,6 @@ public class Card
 	{
 		color = c;
 		ID = i;
-		
 	}
 	
 	public Color getColor()
@@ -23,10 +22,9 @@ public class Card
 		return ID;
 	}
 	
-	public boolean isUseful()
-	{
-		if (color == deck.getTopCard().getColor() || ID == deck.getTopCard().getID() || ID == "W" || ID == "D4")
-			return true;
+	public boolean isUseful(Card topCard)
+	{	
+		return color == topCard.getColor() || ID == topCard.getID() || ID == "W" || ID == "D4";
 	}
 	
 	public Color selectColor(Color input)
@@ -34,4 +32,13 @@ public class Card
 		return input;
 	}
 	
+	public void setColor(Color newColor)
+	{
+		color = newColor;
+	}
+	
+	public String toString()
+	{
+		return "card " + "(" + getColor() + ", " + getID() + ")";
+	}
 }

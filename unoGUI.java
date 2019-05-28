@@ -22,6 +22,7 @@ public class unoGUI extends JComponent /*implements ActionListener*/{
 	private BufferedImage cards3[] = new BufferedImage[108];
 	private BufferedImage deck = null;
 	private BufferedImage discard[] = new BufferedImage[108];
+	private BufferedImage arrow = null;
 	private Hand hand0, hand1, hand2, hand3;
 	private Card topOfDiscard;
 	
@@ -53,7 +54,7 @@ public class unoGUI extends JComponent /*implements ActionListener*/{
 		//t.start();
 	}	
 	
-	public void getInput()
+	/*public void getInput()
 	{
 		addMouseListener(new MouseAdapter()
 		{
@@ -63,7 +64,7 @@ public class unoGUI extends JComponent /*implements ActionListener*/{
 			}
 		});
 		
-	}
+	}*/
 	
 	/*public void takeCard(Card card, Hand hand)
 	{
@@ -96,15 +97,26 @@ public class unoGUI extends JComponent /*implements ActionListener*/{
 		if(turn == 0) 
 			g2.drawLine(750, 860, 850, 865);
 		
+		//green rectangle over the middle
+		g2.setColor( new Color(11, 102, 35));
+		g2.fillRect(200, 200, 1000, 600); //resize and move as needed
+		
+		arrow = ImageIO.read(new File("arrow.png"));
+		if (turn != -1) {
+			g2.rotate((turn+1)*Math.PI/2, 800, 500);
+			g2.drawImage(arrow, 800, 500, null);
+			g2.rotate(-(turn+1)*Math.PI/2, 800, 500);
+		}
 
 		deck = ImageIO.read(new File("card_back.png"));
-
 		g2.drawImage(deck, 700, 430, 100, 140, null);
 		
 
-		discard[0] = ImageIO.read(getCardFile(topOfDiscard));
-		
+		discard[0] = ImageIO.read(getCardFile(topOfDiscard));		
 		g2.drawImage(discard[0], 900, 430, 100, 140, null);
+		
+		
+
 		
 		if(turn == 0 || turn == -1)
 		{
@@ -175,7 +187,6 @@ public class unoGUI extends JComponent /*implements ActionListener*/{
 				g2.rotate(1.57, 1530, 150 + spacing * (x + 1));		
 			}
 		}
-		
 	}
 
 	public void actionPerformed(ActionEvent e) {
